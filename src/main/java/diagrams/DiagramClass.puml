@@ -1,0 +1,152 @@
+@startuml
+' Enumeraciones
+enum TipoCliente {
+  ConsumidorFinal
+  ResponsableInscripto
+  Exento
+}
+enum TipoImpuesto {
+  IVA
+  IIBBCABA
+  IIBBBsAs
+  OtrosImpuestos
+}
+
+' Modelos principales
+class Cliente {
+  - cuit: String
+  - razonSocial: String
+  - tipoCliente: TipoCliente
+  - listaPrecio: ListaPrecio
+  - facturas: List<Factura>
+  + agregarFactura(f: Factura)
+  + tieneFacturasImpagas(cantidad: int): boolean
+  + toDTO(): ClienteDTO
+}
+class ListaPrecio {
+  - listaPreciosID: int
+  - descripcion: String
+  - clientes: List<Cliente>
+  + addCliente(c: Cliente)
+  + getClientes(): ArrayList<ClienteDTO>
+}
+class Factura {
+  - cliente: Cliente
+  - sucursalID: int
+  - numero: int
+  - fchEmision: LocalDate
+  - total: double
+  - productos: List<FacturaProducto>
+  - impuestos: List<FacturaImpuesto>
+  - pagos: List<PagoFactura>
+  + agregarProducto(p: Producto, cantidad: int, precio: double)
+  + agregarImpuesto(imp: FacturaImpuesto)
+  + agregarPago(pago: PagoFactura)
+  + getTotalPagado(): double
+}
+class FacturaProducto {
+  - producto: Producto
+  - cantidad: int
+  - precio: double
+}
+class FacturaImpuesto {
+  - tipoImpuesto: TipoImpuesto
+  - porcentaje: double
+  - importe: double
+}
+class PagoFactura {
+  - factura: Factura
+  - totalPagado: double
+}
+class Producto {
+  - productoID: int
+  - descripcion: String
+  - precio: double
+}
+class Remito {
+  - remitoID: int
+  - fecha: LocalDate
+  - cliente: Cliente
+  - productos: List<RemitoProducto>
+}
+class RemitoProducto {
+  - producto: Producto
+  - cantidad: int
+  - precio: double
+}
+class Pago {
+  - fecha: LocalDate
+  - importe: double
+  - banco: String
+  - cuenta: String
+  - facturasAsociadas: List<PagoFactura>
+}
+class Recibo {
+  - cuitCliente: String
+  - razonSocialCliente: String
+  - pagos: List<InfoPagoDTO>
+}
+
+' Relaciones de composición y asociación
+ListaPrecio "1" o-- "*" Cliente
+Cliente "1" o-- "*" Factura
+Factura "1" o-- "*" FacturaProducto
+Factura "1" o-- "*" FacturaImpuesto
+Factura "1" o-- "*" PagoFactura
+Remito "1" o-- "*" RemitoProducto
+Pago "1" o-- "*" PagoFactura
+Recibo "1" o-- "*" InfoPagoDTO
+
+' DTOs principales
+class ClienteDTO {
+  cuit: String
+  razonSocial: String
+  tipoCliente: TipoCliente
+}
+class FacturaDTO {
+  sucursalID: int
+  numero: int
+  fchEmision: LocalDate
+  total: double
+  productos: ArrayList<ProductoFacturaDTO>
+}
+class ProductoFacturaDTO {
+  productoID: int
+  cantidad: int
+  precio: double
+}
+class ProductoRemitoDTO {
+  productoID: int
+  cantidad: int
+  precio: double
+}
+class RemitosEmitidosDTO {
+  remitoID: int
+  fecha: LocalDate
+  productos: ArrayList<ProductoRemitoDTO>
+}
+class InfoFacturaDTO {
+  fchEmision: LocalDate
+  numero: int
+  total: double
+}
+class InfoPagoDTO {
+  fecha: LocalDate
+  banco: String
+  cuenta: String
+  importe: double
+  infoFactura: List<InfoFacturaDTO>
+}
+class ReciboEmitidoDTO {
+  cuitCliente: String
+  razonSocial: String
+  infoPago: ArrayList<InfoPagoDTO>
+}
+class PagoDTO
+
+' Controladores (Singleton)
+class ClienteController
+class VentasController
+class PagosController
+
+@enduml

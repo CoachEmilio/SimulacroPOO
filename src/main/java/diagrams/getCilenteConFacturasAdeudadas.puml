@@ -1,0 +1,50 @@
+@startuml
+actor Usuario
+participant ClienteController
+participant Cliente
+participant Factura
+participant PagoFactura
+participant ClienteDTO
+
+Usuario -> ClienteController: getClienteConFacturasAdeudadas(cantFacturas)
+activate ClienteController
+ClienteController -> ClienteController: crear lista result vacía
+loop por cada cliente
+    ClienteController -> Cliente: tieneFacturasImpagas(cantFacturas)
+    activate Cliente
+    Cliente -> Factura: obtener lista de facturas
+    activate Factura
+    Factura --> Cliente: lista de facturas
+    loop por cada factura
+        Cliente -> Factura: getTotal()
+        Factura --> Cliente: total
+        Cliente -> Factura: getTotalPagado()
+        activate Factura
+        Factura -> PagoFactura: obtener lista de pagos
+        activate PagoFactura
+        PagoFactura --> Factura: lista de pagos
+        loop por cada pago
+            Factura -> PagoFactura: getTotalPagado()
+            PagoFactura --> Factura: totalPagado
+            note right: suma al total pagado
+        end
+        deactivate PagoFactura
+        Factura --> Cliente: totalPagado
+        alt Si factura impaga (total > totalPagado)
+            note right: suma al contador de impagas
+        end
+        deactivate Factura
+    end
+    alt Si tiene facturas impagas
+        ClienteController -> Cliente: toDTO()
+        Cliente -> ClienteDTO: (crea DTO)
+        activate ClienteDTO
+        ClienteDTO --> Cliente: DTO creado
+        ClienteController -> ClienteDTO: agregar a result
+        deactivate ClienteDTO
+    end
+    deactivate Cliente
+end
+ClienteController -> Usuario: retorna lista de ClienteDTO
+deactivate ClienteController
+@enduml
