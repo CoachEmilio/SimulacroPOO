@@ -31,7 +31,7 @@ loop por cada cliente
         deactivate PagoFactura
         Factura --> Cliente: totalPagado
         alt Si factura impaga (total > totalPagado)
-            note right: suma al contador de impagas
+            note right: Se compara total y totalPagado. Si total > totalPagado, suma al contador de impagas.
         end
         deactivate Factura
     end

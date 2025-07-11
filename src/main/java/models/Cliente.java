@@ -35,12 +35,4 @@ package models;
             }
             return impagas >= cantidad;
         }
-
-        public ClienteDTO toDTO() {
-            ClienteDTO dto = new ClienteDTO();
-            dto.cuit = this.cuit;
-            dto.razonSocial = this.razonSocial;
-            dto.tipoCliente = this.tipoCliente;
-            return dto;
-        }
     }
