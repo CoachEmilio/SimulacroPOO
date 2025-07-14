@@ -17,13 +17,15 @@ loop por cada cliente
         Factura --> Cliente: total
         Cliente -> Factura: getTotalPagado()
         Factura --> Cliente: totalPagado
-        opt Si total > totalPagado
+        opt [Si total > totalPagado]
+            note left: facturasImpagas++
             Cliente -> Cliente: incrementa contador de impagas
         end
     end
+    Cliente --> ClienteController: retorna true (siempre para el caso de uso)
     Cliente --> ClienteController: retorna true/false si tiene facturas impagas
     deactivate Cliente
-    opt [facturasImpagas >= cantFacturas]
+    opt [facturasImpagas FacturasImpagas >= cantFacturas]
         ClienteController -> ClienteController: agregar datos del cliente a result
     end
 end
