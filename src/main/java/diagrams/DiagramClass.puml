@@ -102,9 +102,9 @@ enum TipoImpuesto {
 ListaPrecio "1" o-- "*" Cliente
 Cliente "1" --o "*" Factura
 Cliente "1" --o "*" Recibo
-Factura "1" o-- "*" FacturaProducto
-Factura "1" o-- "*" FacturaImpuesto
-Factura "1" o-- "*" PagoFactura
+Factura "1" *--- "*" FacturaProducto
+Factura "1" *--- "*" FacturaImpuesto
+Factura "1" *--- "*" PagoFactura
 Remito "1" o-- "*" RemitoProducto
 Pago "1" --* "*" PagoFactura
 Factura "0..*" --* "1" VentasController
