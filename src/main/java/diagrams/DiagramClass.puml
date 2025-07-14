@@ -1,17 +1,4 @@
 @startuml
-' Enumeraciones
-enum TipoCliente {
-  ConsumidorFinal
-  ResponsableInscripto
-  Exento
-}
-enum TipoImpuesto {
-  IVA
-  IIBBCABA
-  IIBBBsAs
-  OtrosImpuestos
-}
-
 ' Modelos principales
 class Cliente {
   - cuit: String
@@ -19,16 +6,11 @@ class Cliente {
   - tipoCliente: TipoCliente
   - listaPrecio: ListaPrecio
   - facturas: List<Factura>
-  + agregarFactura(f: Factura)
-  + tieneFacturasImpagas(cantidad: int): boolean
-  + toDTO(): ClienteDTO
 }
 class ListaPrecio {
   - listaPreciosID: int
   - descripcion: String
   - clientes: List<Cliente>
-  + addCliente(c: Cliente)
-  + getClientes(): ArrayList<ClienteDTO>
 }
 class Factura {
   - cliente: Cliente
@@ -39,10 +21,6 @@ class Factura {
   - productos: List<FacturaProducto>
   - impuestos: List<FacturaImpuesto>
   - pagos: List<PagoFactura>
-  + agregarProducto(p: Producto, cantidad: int, precio: double)
-  + agregarImpuesto(imp: FacturaImpuesto)
-  + agregarPago(pago: PagoFactura)
-  + getTotalPagado(): double
 }
 class FacturaProducto {
   - producto: Producto
@@ -84,69 +62,60 @@ class Pago {
 class Recibo {
   - cuitCliente: String
   - razonSocialCliente: String
-  - pagos: List<InfoPagoDTO>
+}
+
+' Controladores (Singleton)
+class ClienteController{
+  - listadoClientes: List<Cliente>
+  + getClienteConFacturasAdeudadas(cantidad: int): ArrayList<ClienteDTO>
+  + getClientesPorListaPrecio(int lpID)
+  + addCliente(c: Cliente)
+  + getClientes(): ArrayList<ClienteDTO>
+  + tieneFacturasImpagas(cantidad: int): boolean
+  }
+
+class VentasController {
+  + agregarProducto(p: Producto, cantidad: int, precio: double)
+  + agregarImpuesto(imp: FacturaImpuesto)
+  + getTotalPagado(): double
+  + agregarFactura(f: Factura)
+  }
+
+class PagosController{
+  + agregarPago(pago: PagoFactura)
+  }
+
+' Enumeraciones
+enum TipoCliente {
+  ConsumidorFinal
+  ResponsableInscripto
+  Exento
+}
+enum TipoImpuesto {
+  IVA
+  IIBBCABA
+  IIBBBsAs
+  OtrosImpuestos
 }
 
 ' Relaciones de composición y asociación
 ListaPrecio "1" o-- "*" Cliente
-Cliente "1" o-- "*" Factura
+Cliente "1" --o "*" Factura
+Cliente "1" --o "*" Recibo
 Factura "1" o-- "*" FacturaProducto
 Factura "1" o-- "*" FacturaImpuesto
 Factura "1" o-- "*" PagoFactura
 Remito "1" o-- "*" RemitoProducto
-Pago "1" o-- "*" PagoFactura
-Recibo "1" o-- "*" InfoPagoDTO
+Pago "1" --* "*" PagoFactura
+Factura "0..*" --* "1" VentasController
+Producto "0..*" --* "1" VentasController
+Producto "0..*" --o "1" RemitoProducto
+Cliente "1" --o "0..*" Remito
 
-' DTOs principales
-class ClienteDTO {
-  cuit: String
-  razonSocial: String
-  tipoCliente: TipoCliente
-}
-class FacturaDTO {
-  sucursalID: int
-  numero: int
-  fchEmision: LocalDate
-  total: double
-  productos: ArrayList<ProductoFacturaDTO>
-}
-class ProductoFacturaDTO {
-  productoID: int
-  cantidad: int
-  precio: double
-}
-class ProductoRemitoDTO {
-  productoID: int
-  cantidad: int
-  precio: double
-}
-class RemitosEmitidosDTO {
-  remitoID: int
-  fecha: LocalDate
-  productos: ArrayList<ProductoRemitoDTO>
-}
-class InfoFacturaDTO {
-  fchEmision: LocalDate
-  numero: int
-  total: double
-}
-class InfoPagoDTO {
-  fecha: LocalDate
-  banco: String
-  cuenta: String
-  importe: double
-  infoFactura: List<InfoFacturaDTO>
-}
-class ReciboEmitidoDTO {
-  cuitCliente: String
-  razonSocial: String
-  infoPago: ArrayList<InfoPagoDTO>
-}
-class PagoDTO
-
-' Controladores (Singleton)
-class ClienteController
-class VentasController
-class PagosController
+ClienteController "1" *-- "0..*" Cliente
+PagosController "1" *-- "0..*" Pago
+ClienteController "1" --- "1" PagosController
+ClienteController "1" --- "1" VentasController
+PagosController "1" ---- "1" VentasController
 
 @enduml

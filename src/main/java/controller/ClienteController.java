@@ -48,6 +48,22 @@ public class ClienteController {
         return instance;
     }
 
+    //Borré el metodo de dtos en clientes y acá lo traspasé a ClienteController
+    // Punto 2: Devuelve los clientes con al menos 'cantFacturas' impagas
+    public List<ClienteDTO> getClienteConFacturasAdeudadas(int cantFacturas) {
+        ArrayList<ClienteDTO> result = new ArrayList<>();
+        for (Cliente c : this.clientes) {
+            if (c.tieneFacturasImpagas(cantFacturas)) {
+                ClienteDTO dto = new ClienteDTO();
+                dto.cuit = c.getCuit();
+                dto.razonSocial = c.getRazonSocial();
+                dto.tipoCliente = c.getTipoCliente();
+                result.add(dto);
+            }
+        }
+        return result;
+    }
+
     // Punto 3: Devuelve los clientes (DTO) de una lista de precios específica
     // Corregido para devolver una lista de ClienteDTO y no desde el modelo ListaPrecio.
     public List<ClienteDTO> getClientesPorListaPrecio(int lpID) {
@@ -67,21 +83,7 @@ public class ClienteController {
         return new ArrayList<>();
     }
 
-    //Borré el método de dtos en clientes y acá lo traspasé a ClienteController
-    // Punto 2: Devuelve los clientes con al menos 'cantFacturas' impagas
-    public List<ClienteDTO> getClienteConFacturasAdeudadas(int cantFacturas) {
-        ArrayList<ClienteDTO> result = new ArrayList<>();
-        for (Cliente c : this.clientes) {
-            if (c.tieneFacturasImpagas(cantFacturas)) {
-                ClienteDTO dto = new ClienteDTO();
-                dto.cuit = c.getCuit();
-                dto.razonSocial = c.getRazonSocial();
-                dto.tipoCliente = c.getTipoCliente();
-                result.add(dto);
-            }
-        }
-        return result;
-    }
+
 
     // Devuelve los nombres de todos los productos (para la vista)
     public List<String> getNombresProductos() {
